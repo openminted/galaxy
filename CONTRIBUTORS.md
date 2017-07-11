@@ -164,6 +164,7 @@ The following individuals have contributed code to Galaxy:
 * Thomas Wollmann <thomas.s.wollmann@gmail.com> <thomas.wollmann@bioquant.uni-heidelberg.de>
 * Jay Young <xiaojay@gmail.com>
 * Yi Zhang <yizhang@bx.psu.edu>
+* Stavros Sachtouris <saxtouri@grnet.gr>
 
 # Institutional sponsors
 
