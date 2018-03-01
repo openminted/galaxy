@@ -13,6 +13,8 @@ define([
     'ui/editable-text'
 ], function( Utils, Globals, Workflow, WorkflowCanvas, Node, WorkflowIcons, FormWrappers, Ui, async_save_text, Toastr ){
 
+workflow =new Workflow( this, $("#canvas-container") );
+
     // Reset tool search to start state.
     function reset_tool_search( initValue ) {
         // Function may be called in top frame or in tool_menu_frame;
@@ -59,9 +61,16 @@ define([
     return Backbone.View.extend({
         initialize: function(options) {
             var self = Globals.app = this;
+		
+
+
             this.options = options;
             this.urls = options && options.urls || {};
+	
+this.urls.workflow_index = 'http://localhost:8080/blah?id='+options.id;
+
             var close_editor = function() {
+		console.log(workflow);
                 self.workflow.check_changes_in_active_form();
                 if ( workflow && self.workflow.has_changes ) {
                     var do_close = function() {
@@ -85,6 +94,8 @@ define([
             var save_current_workflow = function ( eventObj, success_callback ) {
                 show_message( "Saving workflow", "progress" );
                 self.workflow.check_changes_in_active_form();
+                window.parent.postMessage("workflowSaved","*");
+
                 if (!self.workflow.has_changes) {
                     hide_modal();
                     if ( success_callback ) {
@@ -252,16 +263,19 @@ define([
                  }
             });
 
-            window.make_popupmenu && make_popupmenu( $("#workflow-options-button"), {
+            /*window.make_popupmenu && make_popupmenu( $("#workflow-options-button"), {
                 "Save" : save_current_workflow,
-                "Save As": workflow_save_as,
-                "Run": function() {
-                    window.location = Galaxy.root + "workflow/run?id=" + self.options.id;
-                },
+                //"Save As": workflow_save_as,
+                //"Run": function() {
+                //    window.location = Galaxy.root + "workflow/run?id=" + self.options.id;
+                //},
                 "Edit Attributes" : function() { self.workflow.clear_active_node() },
-                "Auto Re-layout": layout_editor,
-                "Close": close_editor
-            });
+                "Auto Re-layout": layout_editor//,
+                //"Close": close_editor
+            });*/
+	 $("#workflow-options-button").click( function (){
+			save_current_workflow();
+		});
 
             /******************************************** Issue 3000*/
             function workflow_save_as() {

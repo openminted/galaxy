@@ -1,4 +1,25 @@
-<%inherit file="/webapps/galaxy/base_panels.mako"/>
+<%inherit file="/base/base_panels.mako"/>
+<!-- webapps/galaxy/base_panels.mako -->
+<%namespace name="mod_masthead" file="/webapps/galaxy/galaxy.masthead.mako"/>
+
+## Default title
+<%def name="title()"></%def>
+
+<%def name="javascripts()">
+${parent.javascripts()}
+</%def>
+
+<%def name="late_javascripts()">
+${parent.late_javascripts()}
+</%def>
+
+## Masthead
+<%def name="masthead()">
+    <span class="omtd-header">OpenMinTeD Workflow Editor</span>
+    <%
+        mod_masthead.load(self.active_view);
+    %>
+</%def>
 
 <%def name="title()">
     Workflow Editor
@@ -65,6 +86,15 @@
 
     <style type="text/css">
     body { margin: 0; padding: 0; overflow: hidden; }
+
+.omtd-header {
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        line-height: 1.5;
+        font-family: verdana;
+        padding-left: 5px;
+    }
 
     div.toolTitleDisabled {
         padding-top: 5px;
@@ -354,7 +384,7 @@
 
     <div class="unified-panel-header" unselectable="on">
         <div class="unified-panel-header-inner" style="float: right">
-            <a id="workflow-options-button" class="panel-header-button" href="#"><span class="fa fa-cog"></span></a>
+            <a id="workflow-options-button" class="panel-header-button" style="text-decoration:none;" href="#"><span class="fa">&#128190;</span> Save</a>
         </div>
         <div class="unified-panel-header-inner">
             Workflow Canvas | ${h.to_unicode( stored.name ) | h}

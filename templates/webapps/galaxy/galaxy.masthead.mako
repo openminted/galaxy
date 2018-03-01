@@ -45,7 +45,7 @@
         // note: don't use a link to avoid roundtrip request
         // note: we can't select here because the page (incl. messgaebox, center, etc.) isn't fully rendered
         // TODO: remove these when we no longer navigate with iframes
-        var in_iframe = window !== window.top;
+        /*var in_iframe = window !== window.top;
         if( in_iframe ){
             var styleElement = document.createElement( 'style' );
             document.head.appendChild( styleElement );
@@ -55,7 +55,7 @@
              ].forEach( function( rule ){
                 styleElement.sheet.insertRule( rule, 0 );
             });
-        }
+        }*/
         // TODO: ?? move above to base_panels.mako?
 
         ## load galaxy js-modules
@@ -69,13 +69,13 @@
                 Galaxy.user = new user.User(${ h.dumps( masthead_config[ 'user_json' ], indent=2 ) });
             }
 
-            $(function() {
+            /*$(function() {
                 if (!Galaxy.masthead) {
                     Galaxy.masthead = new Masthead.View(${ h.dumps( masthead_config ) });
                     Galaxy.modal = new Modal.View();
                     $('#masthead').replaceWith( Galaxy.masthead.render().$el );
                 }
-            });
+            });*/
         });
     </script>
 </%def>
