@@ -426,7 +426,7 @@ ${parent.late_javascripts()}
             ## Workflow name.
             <div id="workflow-name-area" class="form-row">
                 <label>Name:</label>
-                <span id="workflow-name" class="editable-text" title="Click to rename workflow">${h.to_unicode( stored.name ) | h}</span>
+                <span id="workflow-name">${h.to_unicode( stored.name ) | h}</span>
             </div>
             ## Workflow tags.
             <%namespace file="/tagging_common.mako" import="render_individual_tagging_element" />
