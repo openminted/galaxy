@@ -280,7 +280,29 @@ class JobContext(object):
         app = self.app
         sa_session = self.sa_session
 
-        primary_data = _new_hda(app, sa_session, ext, designation, visible, dbkey, self.permissions)
+        timer = ExecutionTimer()
+        # AF replacing following line
+        #primary_data = _new_hda(app, sa_session, ext, designation, visible, dbkey, self.permissions)
+        # with the following modified C&P from the function
+        timer1 = ExecutionTimer()	
+        primary_data = app.model.HistoryDatasetAssociation(extension=ext,
+                                                           designation=designation,
+                                                           visible=visible,
+                                                           dbkey=dbkey,
+                                                           create_dataset=True,
+                                                           flush=False,
+                                                           sa_session=sa_session)
+        log.debug("omtd: primary data '%s'. %s" , primary_data, timer1)
+	timer3 = ExecutionTimer()
+        #if self.permissions is not UNSET:
+        #    app.security_agent.set_all_dataset_permissions(primary_data.dataset, self.permissions, new=True, flush=False)
+        log.debug("omtd: dataset permissions '%s'. %s", app.security_agent, timer3)
+        timer2 = ExecutionTimer()
+        sa_session.add(primary_data)
+        log.debug("omtd: security agent '%s'. %s" , app.security_agent, timer2)
+        # end modified C&P
+        
+        log.debug("omtd: new hda '%s'. %s" , sa_session, timer)
 
         # Copy metadata from one of the inputs if requested.
         metadata_source = None
@@ -288,9 +310,12 @@ class JobContext(object):
             metadata_source = self.inp_data[metadata_source_name]
 
         sa_session.flush()
+
         # Move data from temp location to dataset location
+	timer = ExecutionTimer()
         app.object_store.update_from_file(primary_data.dataset, file_name=filename, create=True)
-        primary_data.set_size()
+        log.debug("omtd: Updated object store with file '%s'. %s" , filename, timer)
+	primary_data.set_size()
         # If match specified a name use otherwise generate one from
         # designation.
         primary_data.name = name
@@ -650,6 +675,7 @@ def _new_hda(
     """Return a new unflushed HDA with dataset and permissions setup.
     """
     # Create new primary dataset
+    timer1 = ExecutionTimer()	
     primary_data = app.model.HistoryDatasetAssociation(extension=ext,
                                                        designation=designation,
                                                        visible=visible,
@@ -657,9 +683,14 @@ def _new_hda(
                                                        create_dataset=True,
                                                        flush=False,
                                                        sa_session=sa_session)
+    log.debug("omtd: primary data '%s'. %s" , primary_data, timer1)
+
+    timer2 = ExecutionTimer()	
     if permissions is not UNSET:
         app.security_agent.set_all_dataset_permissions(primary_data.dataset, permissions, new=True, flush=False)
     sa_session.add(primary_data)
+    log.debug("omtd: security agent '%s'. %s" , app.security_agent, timer2)
+
     return primary_data
 
 

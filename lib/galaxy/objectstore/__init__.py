@@ -424,7 +424,7 @@ class DiskObjectStore(ObjectStore):
                 if preserve_symlinks and os.path.islink(file_name):
                     force_symlink(os.readlink(file_name), self.get_filename(obj, **kwargs))
                 else:
-                    shutil.copy(file_name, self.get_filename(obj, **kwargs))
+                    shutil.move(file_name, self.get_filename(obj, **kwargs))
             except IOError as ex:
                 log.critical('Error copying %s to %s: %s' % (file_name, self._get_filename(obj, **kwargs), ex))
                 raise ex
