@@ -22,7 +22,7 @@ define( [ 'utils/utils', 'mvc/form/form-view', 'mvc/tool/tool-form-base' ], func
                     } );
                 }
             } ) );
-            _addLabelAnnotation( this.form );
+//            _addLabelAnnotation( this.form );
             this.form.render();
         }
     });
@@ -108,7 +108,7 @@ define( [ 'utils/utils', 'mvc/form/form-view', 'mvc/tool/tool-form-base' ], func
         var options  = form.model.attributes;
         var workflow = options.workflow;
         var node     = options.node;
-        options.inputs.unshift({
+/*        options.inputs.unshift({
             type    : 'text',
             name    : '__annotation',
             label   : 'Annotation',
@@ -138,7 +138,7 @@ define( [ 'utils/utils', 'mvc/form/form-view', 'mvc/tool/tool-form-base' ], func
                 input_element.model.set( 'error_text', duplicate && 'Duplicate label. Please fix this before saving the workflow.' );
                 form.trigger( 'change' );
             }
-        });
+        });*/
     }
 
     /** Builds all sub sections */
@@ -303,8 +303,9 @@ define( [ 'utils/utils', 'mvc/form/form-view', 'mvc/tool/tool-form-base' ], func
             visit( input_config, [], output_id );
             return input_config;
         }
-
+/*
         if ( output_id ) {
+
             inputs.push({
                 name        : 'pja__' + output_id + '__EmailAction',
                 label       : 'Email notification',
@@ -324,10 +325,12 @@ define( [ 'utils/utils', 'mvc/form/form-view', 'mvc/tool/tool-form-base' ], func
                 ignore      : 'false',
                 help        : 'Upon completion of this step, delete non-starred outputs from completed workflow steps if they are no longer required as inputs.'
             });
+
             for ( var i in node.output_terminals ) {
                 inputs.push( _makeSection( i, datatypes ) );
             }
         }
+*/
     }
 
     return {

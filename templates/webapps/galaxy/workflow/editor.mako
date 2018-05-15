@@ -446,7 +446,7 @@ ${parent.late_javascripts()}
                 </div>
                 ## Workflow annotation.
                 ## Annotation elt.
-                <div id="workflow-annotation-area" class="form-row">
+<!--                <div id="workflow-annotation-area" class="form-row">
                     <label>Annotation / Notes:</label>
                     <div id="workflow-annotation" class="editable-text" title="Click to edit annotation">
                     %if annotation:
@@ -456,7 +456,7 @@ ${parent.late_javascripts()}
                     %endif
                     </div>
                     <div class="toolParamHelp">Add an annotation or notes to a workflow; annotations are available when a workflow is viewed.</div>
-                </div>
+                </div> -->
             </div>
         </div>
 
