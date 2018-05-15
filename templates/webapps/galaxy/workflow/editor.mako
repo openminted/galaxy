@@ -15,7 +15,7 @@ ${parent.late_javascripts()}
 
 ## Masthead
 <%def name="masthead()">
-    <span class="omtd-header">OpenMinTeD Workflow Editor</span>
+    <!-- <span class="omtd-header">OpenMinTeD Workflow Editor</span> -->
     <%
         mod_masthead.load(self.active_view);
     %>
