@@ -282,6 +282,15 @@
             <!-- Password to access Mesos cluster. -->
             <param id="insecure">true</param>
             <!-- True to communicate with Chronos over HTTPS; false otherwise-->
+            <param id="reg_prefix">private.docker.registry.example.com</param>
+            <!-- Private docker registry to ask for information from-->
+            <param id="reg_user">johndoe</param>
+            <!-- Docker registry user name-->
+            <param id="reg_pass">johndoespassword</param>
+            <!-- Docker registry user password-->
+            <param id="cluster_threashold">1024</param>
+            <!-- A threashold for image sizes in MB. If a docker image is less than this threashold
+                 when zipped, it goes to the normal cluster, otherwise goes to the heacy cluster-->
         </plugin>
         <!-- Additionally any plugin or destination (below) may define an "enabled" parameter that should
              evaluate to True or False. When setup using
