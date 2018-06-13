@@ -1,12 +1,15 @@
 from __future__ import absolute_import
 import functools
 import logging
+import requests
 from galaxy import model
 from galaxy.jobs.runners import AsynchronousJobRunner, AsynchronousJobState
+
 
 CHRONOS_IMPORT_MSG = ('The Python \'chronos\' package is required to use '
                       'this feature, please install it or correct the '
                       'following error:\nImportError {msg!s}')
+
 
 try:
     import chronos
@@ -21,6 +24,43 @@ LOGGER = logging.getLogger(__name__)
 
 class ChronosRunnerException(Exception):
     pass
+
+
+def get_docker_image_size(
+        image, reg_prefix='registry.hub.docker.com', user=None, password=None):
+    """Get the zipped size of a docker image
+    GET https://<docker.registry>/<image>/manifests/<tag>
+      Accept: application/vnd.docker.distribution.manifest.v2+json
+    Retururn: the sum of all layer sizes (zipped, of course)!
+    """
+    LOGGER.debug('get_docker_image_size {} {} {} {}'.format(
+        image, reg_prefix, user, password))
+    img, tag = image.split(':') if ':' in image else (image, 'latest')
+    auth = None
+    headers = {
+        'Accept': 'application/vnd.docker.distribution.manifest.v2+json'}
+    if img.startswith(reg_prefix) and user:
+        auth = requests.auth.HTTPBasicAuth(user, password)
+        _, img = img.split(reg_prefix)
+        img = img.strip('/')
+    else:
+        params = dict(
+            scope='repository:{}:*'.format(img), service='registry.docker.io')
+        r = requests.get('https://auth.docker.io/token', params=params)
+        if r.status_code not in (200, ):
+            raise ChronosRunnerException(
+                'Could not get token for image {} ({})'.format(image, r.text))
+        token = r.json()['token']
+        headers['Authorization'] = 'Bearer {}'.format(token)
+        reg_prefix = 'registry.hub.docker.com'
+
+    url = 'https://{prefix}/v2/{img}/manifests/{tag}'.format(
+        prefix= reg_prefix, img=img, tag=tag)
+    r = requests.get(url, headers=headers, auth=auth)
+    if r.status_code not in (200, ):
+        raise ChronosRunnerException(
+            'Failed to get layers for {} ({})'.format(image, r.text))
+    return(sum(map(lambda x: x['size'], r.json()['layers'])))
 
 
 def handle_exception_call(func):
@@ -275,9 +315,22 @@ class ChronosJobRunner(AsynchronousJobRunner):
             job_destination.params)
         template.update(destination_params)
         template['container']['type'] = 'DOCKER'
-        template['container']['image'] = self._find_container(
-            job_wrapper).container_id
         template['container'].update(_get_container_params(job_wrapper))
+        image = self._find_container(job_wrapper).container_id
+        reg_prefix = job_destination.params.get('reg_prefix') or None
+        reg_user = job_destination.params.get('reg_user') or None
+        reg_pass = job_destination.params.get('reg_pass') or None
+        threashold = job_destination.params.get('cluster_threashold') or 1024
+        template['container']['image'] = image
+        try:
+             image_size = get_docker_image_size(
+                image, reg_prefix, reg_user, reg_pass)
+             image_in_mb = image_size // 1048576
+        except Exception as e:
+            LOGGER.debug('Failed to set image size ({}), continue'.format(e))
+            image_in_mb = 256
+        template['disk'] = 50000 if image_in_mb >= threashold else 256 
+
         return template
 
     def _retrieve_job(self, job_id):
